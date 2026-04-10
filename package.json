@@ -2,7 +2,7 @@
   "name": "supersimple_db_connector",
   "version": "4.0.0",
   "type": "module",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
@@ -14,7 +14,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.28.0",
+    "@modelcontextprotocol/sdk": "^1.29.0",
     "knex": "^3.2.7",
     "mysql2": "^3.20.0",
     "node-sql-parser": "^5.4.0",
