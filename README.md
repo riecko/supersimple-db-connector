@@ -1,7 +1,9 @@
 🚀 Supersimple DB Connector (MCP)
+
 An advanced, modular Model Context Protocol (MCP) server that acts as a bridge between LLMs (like Gemini, Claude, or Cursor) and your data infrastructure. This connector provides a unified interface for both structured relational data (SQL) and unstructured vector data (Qdrant).
 
 ✨ Features
+
 Modular Architecture: Clean separation of concerns between server lifecycle, database configuration, and tool definitions.
 
 Dual Database Support:
@@ -15,6 +17,7 @@ Stdio Transport: Optimized for local integration with IDEs like Cursor, Windsurf
 Cloud-Ready: Fully compatible with deployment platforms like MCPize for managed gateway access.
 
 🛠 Installation
+
 Clone the repository:
 
 Bash
@@ -31,7 +34,9 @@ Codefragment
 DATABASE_URL=postgresql://user:pass@localhost:5432/dbname
 QDRANT_URL=https://your-qdrant-cluster-url
 QDRANT_API_KEY=your-qdrant-api-key
+
 🚀 Usage
+
 Running Locally
 To build the project and start the server using Stdio transport:
 
@@ -57,6 +62,7 @@ JSON
 }
 
 📁 Project Structure
+
 src/index.ts: Application entry point, handles process signals and database connectivity checks.
 
 src/server.ts: MCP server initialization, tool registrations, and capability definitions.
@@ -64,6 +70,7 @@ src/server.ts: MCP server initialization, tool registrations, and capability def
 src/config.ts: Centralized database client management (Knex.js and QdrantClient).
 
 ☁️ Deployment (MCPize)
+
 When deploying to MCPize, ensure you add the following Service Variables in the dashboard under the 'Secrets' or 'Config' section:
 
 DATABASE_URL
@@ -73,6 +80,7 @@ QDRANT_URL
 QDRANT_API_KEY
 
 🔒 Security
+
 This server is designed to provide controlled access to your data. To ensure security:
 
 Use database users with Read-Only permissions in production.
@@ -82,4 +90,5 @@ Never commit your .env file to version control.
 When deploying via MCPize, use the Secrets management dashboard.
 
 📄 License
+
 MIT
