@@ -1,0 +1,30 @@
+{
+  "name": "supersimple_db_connector",
+  "version": "4.0.0",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.28.0",
+    "knex": "^3.2.7",
+    "mysql2": "^3.20.0",
+    "node-sql-parser": "^5.4.0",
+    "pg": "^8.20.0",
+    "sqlite3": "^6.0.1"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.20.0",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.2"
+  }
+}

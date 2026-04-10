@@ -1,0 +1,23 @@
+version: 1
+name: supersimple-db-connector
+description: "Universal database MCP connector for PostgreSQL, MySQL, SQLite and Qdrant vector search"
+author: "SuperSimple.nl"
+runtime: typescript
+entry: dist/index.js
+
+build:
+  install: npm install
+  command: npm run build
+
+startCommand:
+  type: stdio
+  command: node dist/index.js
+
+environment:
+  - DATABASE_URL
+  - QDRANT_URL
+  - QDRANT_API_KEY
+  - EMBEDDING_PROVIDER
+  - EMBEDDING_MODEL
+  - OPENAI_API_KEY
+  - OLLAMA_URL
