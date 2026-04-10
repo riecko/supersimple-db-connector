@@ -47,19 +47,33 @@ Integration with IDEs (Cursor/VS Code/Gemini)
 Add the following configuration to your MCP settings file:
 
 JSON
+
 {
+
   "mcpServers": {
+  
     "supersimple-db": {
+    
       "command": "node",
+      
       "args": ["/absolute/path/to/project/dist/index.js"],
+      
       "env": {
+      
         "DATABASE_URL": "your-db-url",
+        
         "QDRANT_URL": "your-qdrant-url",
+        
         "QDRANT_API_KEY": "your-key"
+        
       }
+      
     }
+    
   }
+  
 }
+
 
 📁 Project Structure
 
