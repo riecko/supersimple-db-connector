@@ -1,5 +1,0 @@
-{
-  "yaml.schemas": {
-    "https://raw.githubusercontent.com/mcpize/cli/main/schemas/mcpize.schema.json": "mcpize.yaml"
-  }
-}
