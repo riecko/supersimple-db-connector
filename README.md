@@ -4,7 +4,9 @@ An advanced, modular Model Context Protocol (MCP) server that acts as a bridge b
 
 ✨ Features
 
-Modular Architecture: Clean separation of concerns between server lifecycle, database configuration, and tool definitions.
+Modular Architecture: 
+
+Clean separation of concerns between server lifecycle, database configuration, and tool definitions.
 
 Dual Database Support:
 
@@ -47,6 +49,7 @@ Integration with IDEs (Cursor/VS Code/Gemini)
 Add the following configuration to your MCP settings file:
 
 JSON
+
 
 {
 
