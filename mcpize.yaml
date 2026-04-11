@@ -1,6 +1,6 @@
 version: 1
 name: supersimple-db-connector
-description: "Universal database MCP connector for PostgreSQL, MySQL, SQLite and Qdrant vector search"
+description: "Universal database MCP connector for PostgreSQL, MySQL, SQLite and Qdrant vector search. Includes audit logging, forbidden table protection, and AST-based SQL security."
 author: "SuperSimple.nl"
 runtime: typescript
 entry: dist/index.js
@@ -10,14 +10,57 @@ build:
   command: npm run build
 
 startCommand:
-  type: stdio
+  type: streamable_http
   command: node dist/index.js
+  port: 3000
+  healthCheck:
+    path: /health
+    intervalSeconds: 30
 
-environment:
-  - DATABASE_URL
-  - QDRANT_URL
-  - QDRANT_API_KEY
-  - EMBEDDING_PROVIDER
-  - EMBEDDING_MODEL
-  - OPENAI_API_KEY
-  - OLLAMA_URL
+config:
+  - key: DATABASE_URL
+    label: "Database URL"
+    description: "PostgreSQL, MySQL of SQLite connection string"
+    required: true
+    secret: true
+    placeholder: "postgresql://user:pass@host:5432/dbname"
+
+  - key: QDRANT_URL
+    label: "Qdrant URL"
+    description: "Qdrant vector database endpoint (optioneel)"
+    required: false
+    secret: false
+    placeholder: "http://localhost:6333"
+
+  - key: QDRANT_API_KEY
+    label: "Qdrant API Key"
+    description: "Alleen nodig voor Qdrant Cloud"
+    required: false
+    secret: true
+
+  - key: OPENAI_API_KEY
+    label: "OpenAI API Key"
+    description: "Voor text embeddings via OpenAI (optioneel)"
+    required: false
+    secret: true
+
+  - key: OLLAMA_URL
+    label: "Ollama URL"
+    description: "Voor lokale embeddings via Ollama (optioneel)"
+    required: false
+    secret: false
+    placeholder: "http://localhost:11434"
+
+  - key: EMBEDDING_PROVIDER
+    label: "Embedding Provider"
+    description: "Kies: openai of ollama"
+    required: false
+    secret: false
+    placeholder: "openai"
+
+  - key: EMBEDDING_MODEL
+    label: "Embedding Model"
+    description: "Bijv. text-embedding-3-small (OpenAI) of nomic-embed-text (Ollama)"
+    required: false
+    secret: false
+    placeholder: "text-embedding-3-small"
