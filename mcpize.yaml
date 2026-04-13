@@ -10,7 +10,7 @@ build:
   command: npm run build
 
 startCommand:
-  type: streamable_http
+  type: sse
   command: node dist/index.js
   port: 3000
   healthCheck:

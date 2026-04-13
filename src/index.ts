@@ -4,6 +4,9 @@ import { db, dbClient } from "./config.js";
 import { createServer } from "./server.js";
 import http from "http";
 
+// Initialiseer de server één keer (Singleton pattern)
+const mcpServer = createServer();
+
 async function shutdown(): Promise<void> {
   console.error("Server wordt afgesloten...");
   await db.destroy();
@@ -14,101 +17,64 @@ process.on("SIGTERM", shutdown);
 process.on("SIGINT", shutdown);
 
 async function run(): Promise<void> {
+  // Database check bij opstarten
   try {
     await db.raw("SELECT 1");
-    console.error(`Database verbinding OK (${dbClient})`);
+    console.error(`🚀 Database verbinding OK (${dbClient})`);
   } catch (err: any) {
-    console.error(`Database niet beschikbaar: ${err.message}`);
+    console.error(`❌ Database niet beschikbaar: ${err.message}`);
+    // We gaan wel door, want de server moet health checks kunnen beantwoorden
   }
 
   const port = parseInt(process.env.PORT || "8080");
-  const isCloud = !!process.env.PORT;
+  const isCloud = !!process.env.PORT || process.env.NODE_ENV === 'production';
 
   if (isCloud) {
-    console.error(`Starting HTTP MCP server on port ${port}`);
+    const transport = new StreamableHTTPServerTransport();
+
+    // Verbind de transport één keer met de server
+    await mcpServer.connect(transport);
 
     const httpServer = http.createServer(async (req, res) => {
-
-      // Health check
-      if (req.method === "GET" && req.url === "/health") {
-        res.writeHead(200, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ status: "ok", version: "4.0.0", db: dbClient }));
-        return;
-      }
-
-      // Root info endpoint
-      if (req.method === "GET" && req.url === "/") {
-        res.writeHead(200, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ name: "supersimple-db-connector", version: "4.0.0" }));
-        return;
-      }
-
-      // Alleen POST naar /mcp
-      if (req.url !== "/mcp") {
-        res.writeHead(404, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ error: "Not found" }));
-        return;
-      }
-
-      // FIX 1: Accept header validatie
-      const accept = req.headers["accept"] ?? "";
-      if (!accept.includes("application/json") && !accept.includes("text/event-stream")) {
-        res.writeHead(406, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ error: "Accept header moet application/json of text/event-stream bevatten" }));
-        return;
-      }
-
-      // FIX 2: Request body inlezen
-      const body = await new Promise<string>((resolve, reject) => {
-        let data = "";
-        req.on("data", chunk => { data += chunk; });
-        req.on("end", () => resolve(data));
-        req.on("error", reject);
-      });
-
-      let parsedBody: unknown;
-      try {
-        parsedBody = body ? JSON.parse(body) : {};
-      } catch {
-        res.writeHead(400, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ error: "Ongeldige JSON in request body" }));
-        return;
-      }
-
-      // FIX 3: Server per request — geen gedeelde state
-      const server = createServer();
-
-      const transport = new StreamableHTTPServerTransport({
-        sessionIdGenerator: undefined, // stateless
-      });
-
-      res.on("close", () => transport.close());
-
-      try {
-        await server.connect(transport);
-        // FIX 1: parsedBody meegeven aan handleRequest
-        await transport.handleRequest(req, res, parsedBody);
-      } catch (err: any) {
-        console.error("Request fout:", err.message);
-        if (!res.headersSent) {
-          res.writeHead(500, { "Content-Type": "application/json" });
-          res.end(JSON.stringify({ error: err.message }));
+      // 1. Health check & Root (Houd deze simpel)
+      if (req.method === "GET") {
+        if (req.url === "/health" || req.url === "/") {
+          res.writeHead(200, { "Content-Type": "application/json" });
+          return res.end(JSON.stringify({ status: "ok", db: dbClient }));
         }
       }
+
+      // 2. MCP Endpoint
+      if (req.url === "/mcp") {
+        try {
+          await transport.handleRequest(req, res);
+        } catch (err: any) {
+          console.error("MCP Request fout:", err.message);
+          if (!res.headersSent) {
+            res.writeHead(500);
+            res.end("Internal Server Error");
+          }
+        }
+        return;
+      }
+
+      // 3. Fallback
+      res.writeHead(404);
+      res.end("Not Found");
     });
 
-    httpServer.listen(port, () => {
-      console.error(`MCP HTTP server luistert op poort ${port}`);
+    httpServer.listen(port, "0.0.0.0", () => {
+      console.error(`✅ MCP HTTP server draait op poort ${port}`);
     });
 
   } else {
-    // Stdio modus voor Claude Desktop — ongewijzigd
-    console.error("Starting stdio MCP server");
+    console.error("⌨️  Starting stdio MCP server");
     const transport = new StdioServerTransport();
-    const server = createServer();
-    await server.connect(transport);
-    process.stdin.resume();
+    await mcpServer.connect(transport);
   }
 }
 
-run();
+run().catch((err) => {
+  console.error("Fatale fout bij opstarten:", err);
+  process.exit(1);
+});
