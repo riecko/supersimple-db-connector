@@ -1,7 +1,7 @@
 import knex from "knex";
 import type { Knex } from "knex";
 
-const dbUrl = process.env.DATABASE_URL || "postgresql://mcp_reader:veiligwachtwoord@127.0.0.1:5432/postgres";
+const dbUrl = process.env.DATABASE_URL || "postgresql://postgres:D00psh0w303@db.rnlfnztztnrafwpaicfm.supabase.co:6543/postgres?sslmode=require";
 
 if (!dbUrl) {
   console.error("FOUT: DATABASE_URL niet ingesteld");
@@ -22,12 +22,16 @@ export const db: Knex = knex({
   connection:
     dbClient === "better-sqlite3"
       ? { filename: dbUrl.replace("sqlite://", "") }
-      : dbUrl,
+      : {
+          connectionString: dbUrl,
+          // CRUCIAL: Supabase vereist SSL voor cloud-verbindingen
+          ssl: dbClient === "pg" ? { rejectUnauthorized: false } : false,
+        },
   useNullAsDefault: dbClient === "better-sqlite3",
   ...(dbClient === "pg" && {
     pool: {
       min: 1,
-      max: 1,
+      max: 1, // Houd het op 1 voor de gratis tier van Supabase/MCPize
       afterCreate: (conn: any, done: Function) => {
         conn.query("SET statement_timeout = 5000", (err: any) => done(err, conn));
       },

@@ -4,7 +4,7 @@
       "command": "node",
       "args": ["/Users/riecko/Projects/mcp/supersimple_db/dist/index.js"],
       "env": {
-        "DATABASE_URL": "postgresql://mcp_reader:veiligwachtwoord@localhost:5432/postgres"
+        "DATABASE_URL": "postgresql://postgres:D00psh0w303@db.rnlfnztztnrafwpaicfm.supabase.co:6543/postgres?sslmode=require"
       }
     }
   }

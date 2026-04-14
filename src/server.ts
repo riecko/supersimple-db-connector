@@ -1,6 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { registerListTables } from "./tools/listTables.js";
-import { registerReadOnlyQuery } from "./tools/readOnlyQuery.js";
+import { registerDataProfile } from "./tools/dataProfile.js";
 import { registerDescribeTable } from "./tools/describeTable.js";
 import { registerQueryData } from "./tools/queryData.js";
 import { registerWriteData } from "./tools/writeData.js";
@@ -14,7 +14,7 @@ export function createServer(): McpServer {
   });
 
   registerListTables(server);
-  registerReadOnlyQuery(server);
+  registerDataProfile(server);
   registerDescribeTable(server);
   registerQueryData(server);
   registerWriteData(server);

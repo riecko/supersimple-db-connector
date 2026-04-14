@@ -10,9 +10,10 @@ build:
   command: npm run build
 
 startCommand:
-  type: sse
+  type: http
   command: node dist/index.js
-  port: 3000
+  port: 8080
+  mcpPath: /
   healthCheck:
     path: /health
     intervalSeconds: 30
